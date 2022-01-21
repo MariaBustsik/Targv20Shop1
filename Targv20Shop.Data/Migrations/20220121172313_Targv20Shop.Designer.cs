@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Targv20Shop.Data;
 
 namespace Targv20Shop.Data.Migrations
 {
     [DbContext(typeof(Targv20ShopDbContext))]
-    partial class Targv20ShopDbContextModelSnapshot : ModelSnapshot
+    [Migration("20220121172313_Targv20Shop")]
+    partial class Targv20Shop
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

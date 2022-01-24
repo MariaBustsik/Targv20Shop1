@@ -8,6 +8,7 @@ using Targv20Shop.Core.Dtos;
 using Targv20Shop.Core.ServiceInterface;
 using Targv20Shop.Data;
 using Targv20Shop.Models.Car;
+using Targv20Shop.Models.Files;
 
 namespace Targv20Shop.Controllers
 {
@@ -16,15 +17,18 @@ namespace Targv20Shop.Controllers
 
         private readonly Targv20ShopDbContext _context;
         private readonly ICarService _carService;
+        private readonly IFileServices _fileService;
 
         public CarController
             (
                 Targv20ShopDbContext context,
-                ICarService carService
+                ICarService carService,
+                IFileServices fileService
             )
         {
             _context = context;
             _carService = carService;
+            _fileService = fileService;
         }
 
         [HttpGet]
@@ -36,7 +40,6 @@ namespace Targv20Shop.Controllers
                     Id = x.Id,
                     Name = x.Name,
                     Mass = x.Mass,
-                    Crew = x.Crew,
                     Prize = x.Prize,
                     Type = x.Type,
                     ConstructedAt = x.ConstructedAt,
@@ -61,7 +64,6 @@ namespace Targv20Shop.Controllers
             var dto = new CarDto()
             {
                 Id = model.Id,
-                Crew = model.Crew,
                 ConstructedAt = model.ConstructedAt,
                 Mass = model.Mass,
                 Name = model.Name,
@@ -70,11 +72,11 @@ namespace Targv20Shop.Controllers
                 CreatedAt = model.CreatedAt,
                 ModifiedAt = model.ModifiedAt,
                 Files = model.Files,
-                Image = model.Image.Select(x => new FileToDatabaseDto
+                ExistingFilePaths = model.ExistingFilePaths
+                .Select(x => new ExistingFilePathDto
                 {
-                    Id = x.Id,
-                    ImageData = x.ImageData,
-                    ImageTitle = x.ImageTitle,
+                    PhotoId = x.PhotoId,
+                    FilePath = x.FilePath,
                     CarId = x.CarId
                 }).ToArray()
             };
@@ -97,16 +99,15 @@ namespace Targv20Shop.Controllers
                 return NotFound();
             }
 
-            var photos = await _context.FileToDatabase
+            var photos = await _context.ExistingFilePath
                 .Where(x => x.CarId == id)
-                .Select(m => new ImagesViewModel
+                .Select(y => new ExistingFilePathViewModel
                 {
-                    ImageData = m.ImageData,
-                    Id = m.Id,
-                    Image = string.Format("data:image/gif;base64,{0}", Convert.ToBase64String(m.ImageData)),
-                    ImageTitle = m.ImageTitle,
-                    CarId = m.Id
-                }).ToArrayAsync();
+                    FilePath = y.FilePath,
+                    PhotoId = y.Id
+                })
+                .ToArrayAsync();
+
 
             var model = new CarViewModel();
 
@@ -115,11 +116,10 @@ namespace Targv20Shop.Controllers
             model.Name = car.Name;
             model.Prize = car.Prize;
             model.Type = car.Type;
-            model.Crew = car.Crew;
             model.ConstructedAt = car.ConstructedAt;
             model.CreatedAt = car.CreatedAt;
             model.ModifiedAt = car.ModifiedAt;
-            model.Image.AddRange(photos);
+            model.ExistingFilePaths.AddRange(photos);
 
             return View(model);
         }
@@ -130,7 +130,6 @@ namespace Targv20Shop.Controllers
             var dto = new CarDto()
             {
                 Id = model.Id,
-                Crew = model.Crew,
                 Mass = model.Mass,
                 Name = model.Name,
                 ConstructedAt = model.ConstructedAt,
@@ -138,11 +137,12 @@ namespace Targv20Shop.Controllers
                 Type = model.Type,
                 CreatedAt = model.CreatedAt,
                 ModifiedAt = model.ModifiedAt,
-                Image = model.Image.Select(x => new FileToDatabaseDto
+                Files = model.Files,
+                ExistingFilePaths = model.ExistingFilePaths
+                .Select(x => new ExistingFilePathDto
                 {
-                    Id = x.Id,
-                    ImageData = x.ImageData,
-                    ImageTitle = x.ImageTitle,
+                    PhotoId = x.PhotoId,
+                    FilePath = x.FilePath,
                     CarId = x.CarId
                 })
             };
@@ -163,6 +163,23 @@ namespace Targv20Shop.Controllers
             var car = await _carService.Delete(id);
 
             if (car == null)
+            {
+                return RedirectToAction(nameof(Index));
+            }
+
+            return RedirectToAction(nameof(Index));
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> RemoveImage(ExistingFilePathViewModel model)
+        {
+            var dto = new ExistingFilePathDto()
+            {
+                FilePath = model.FilePath
+            };
+
+            var image = await _fileService.RemoveImage(dto);
+            if (image == null)
             {
                 return RedirectToAction(nameof(Index));
             }

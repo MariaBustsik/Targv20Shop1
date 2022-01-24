@@ -31,9 +31,6 @@ namespace Targv20Shop.Data.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("Crew")
-                        .HasColumnType("int");
-
                     b.Property<double>("Mass")
                         .HasColumnType("float");
 
@@ -60,6 +57,9 @@ namespace Targv20Shop.Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<Guid?>("CarId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<string>("FilePath")
                         .HasColumnType("nvarchar(max)");
 
@@ -77,9 +77,6 @@ namespace Targv20Shop.Data.Migrations
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid?>("CarId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<byte[]>("ImageData")

@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Targv20Shop.Models.Files;
 
 namespace Targv20Shop.Models.Car
 {
@@ -13,12 +14,11 @@ namespace Targv20Shop.Models.Car
         public string Type { get; set; }
         public double Mass { get; set; }
         public decimal Prize { get; set; }
-        public int Crew { get; set; }
         public DateTime ConstructedAt { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime ModifiedAt { get; set; }
 
         public List<IFormFile> Files { get; set; }
-        public List<ImagesViewModel> Image { get; set; } = new List<ImagesViewModel>();
+        public List<ExistingFilePathViewModel> ExistingFilePaths { get; set; } = new List<ExistingFilePathViewModel>();
     }
 }

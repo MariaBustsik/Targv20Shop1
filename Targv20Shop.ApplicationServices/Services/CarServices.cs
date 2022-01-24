@@ -15,14 +15,17 @@ namespace Targv20Shop.ApplicationServices.Services
     public class CarServices : ICarService
     {
         private readonly Targv20ShopDbContext _context;
+        private readonly IFileServices _file;
 
 
         public CarServices
             (
-                Targv20ShopDbContext context
+                Targv20ShopDbContext context,
+                IFileServices file
             )
         {
             _context = context;
+            _file = file;
         }
 
         public async Task<Car> Edit(Guid id)
@@ -36,22 +39,17 @@ namespace Targv20Shop.ApplicationServices.Services
         public async Task<Car> Add(CarDto dto)
         {
             Car car = new Car();
-            FileToDatabase file = new FileToDatabase();
+            
 
             car.Id = Guid.NewGuid();
             car.Name = dto.Name;
             car.Mass = dto.Mass;
             car.Prize = dto.Prize;
             car.Type = dto.Type;
-            car.Crew = dto.Crew;
             car.ConstructedAt = dto.ConstructedAt;
             car.CreatedAt = DateTime.Now;
             car.ModifiedAt = DateTime.Now;
-
-            if (dto.Files != null)
-            {
-                file.ImageData = UploadFile(dto, car);
-            }
+            _file.ProcessUploadedFile(dto, car);
 
             await _context.Car.AddAsync(car);
             await _context.SaveChangesAsync();
@@ -62,22 +60,18 @@ namespace Targv20Shop.ApplicationServices.Services
         public async Task<Car> Update(CarDto dto)
         {
             Car car = new Car();
-            FileToDatabase file = new FileToDatabase();
+          
 
             car.Id = dto.Id;
             car.Name = dto.Name;
             car.Mass = dto.Mass;
             car.Prize = dto.Prize;
             car.Type = dto.Type;
-            car.Crew = dto.Crew;
             car.ConstructedAt = dto.ConstructedAt;
             car.CreatedAt = dto.CreatedAt;
             car.ModifiedAt = dto.ModifiedAt;
 
-            if (dto.Files != null)
-            {
-                file.ImageData = UploadFile(dto, car);
-            }
+            _file.ProcessUploadedFile(dto, car);
 
             _context.Car.Update(car);
             await _context.SaveChangesAsync();
@@ -93,33 +87,12 @@ namespace Targv20Shop.ApplicationServices.Services
             _context.Car.Remove(car);
             await _context.SaveChangesAsync();
 
+            
+
             return car;
         }
 
-        public byte[] UploadFile(CarDto dto, Car car)
-        {
-
-            if (dto.Files != null && dto.Files.Count > 0)
-            {
-                foreach (var photo in dto.Files)
-                {
-                    using (var target = new MemoryStream())
-                    {
-                        FileToDatabase files = new FileToDatabase
-                        {
-                            Id = Guid.NewGuid(),
-                            ImageTitle = photo.FileName,
-                            CarId = car.Id
-                        };
-
-                        photo.CopyTo(target);
-                        files.ImageData = target.ToArray();
-
-                        _context.FileToDatabase.Add(files);
-                    }
-                }
-            }
-            return null;
-        }
+        
+        
     }
 }

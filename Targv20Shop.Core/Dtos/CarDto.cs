@@ -14,12 +14,11 @@ namespace Targv20Shop.Core.Dtos
         public string Type { get; set; }
         public double Mass { get; set; }
         public decimal Prize { get; set; }
-        public int Crew { get; set; }
         public DateTime ConstructedAt { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime ModifiedAt { get; set; }
 
         public List<IFormFile> Files { get; set; }
-        public IEnumerable<FileToDatabaseDto> Image { get; set; } = new List<FileToDatabaseDto>();
+        public IEnumerable<ExistingFilePathDto> ExistingFilePaths { get; set; } = new List<ExistingFilePathDto>();
     }
 }

@@ -11,5 +11,7 @@ namespace Targv20Shop.Core.Domain
         public Guid Id { get; set; }
         public string FilePath { get; set; }
         public Guid? ProductId { get; set; }
+
+        public Guid? CarId { get; set; }
     }
 }

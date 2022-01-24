@@ -10,8 +10,8 @@ using Targv20Shop.Data;
 namespace Targv20Shop.Data.Migrations
 {
     [DbContext(typeof(Targv20ShopDbContext))]
-    [Migration("20220110093456_Spaceship")]
-    partial class Spaceship
+    [Migration("20220124093447_Targv20Shop.Data")]
+    partial class Targv20ShopData
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -21,10 +21,45 @@ namespace Targv20Shop.Data.Migrations
                 .HasAnnotation("ProductVersion", "5.0.12")
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
+            modelBuilder.Entity("Targv20Shop.Core.Domain.Car", b =>
+                {
+                    b.Property<Guid?>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("ConstructedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<double>("Mass")
+                        .HasColumnType("float");
+
+                    b.Property<DateTime>("ModifiedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal>("Prize")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("Type")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Car");
+                });
+
             modelBuilder.Entity("Targv20Shop.Core.Domain.ExistingFilePath", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("CarId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("FilePath")
@@ -38,6 +73,26 @@ namespace Targv20Shop.Data.Migrations
                     b.HasIndex("ProductId");
 
                     b.ToTable("ExistingFilePath");
+                });
+
+            modelBuilder.Entity("Targv20Shop.Core.Domain.FileToDatabase", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<byte[]>("ImageData")
+                        .HasColumnType("varbinary(max)");
+
+                    b.Property<string>("ImageTitle")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid?>("SpaceshipId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("FileToDatabase");
                 });
 
             modelBuilder.Entity("Targv20Shop.Core.Domain.Product", b =>
@@ -71,7 +126,7 @@ namespace Targv20Shop.Data.Migrations
 
             modelBuilder.Entity("Targv20Shop.Core.Domain.Spaceship", b =>
                 {
-                    b.Property<Guid>("Id")
+                    b.Property<Guid?>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 

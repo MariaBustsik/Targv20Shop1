@@ -94,6 +94,42 @@ namespace Targv20Shop.ApplicationServices.Services
             return uniqueFileName;
         }
 
+        public string ProcessUploadedFile(CarDto dto, Car car)
+        {
+            string uniqueFileName = null;
+
+            if (dto.Files != null && dto.Files.Count > 0)
+            {
+                if (!Directory.Exists(_env.WebRootPath + "\\multipleFileUpload\\"))
+                {
+                    Directory.CreateDirectory(_env.WebRootPath + "\\multipleFileUpload\\");
+                }
+
+                foreach (var photo in dto.Files)
+                {
+                    string uploadsFolder = Path.Combine(_env.WebRootPath, "multipleFileUpload");
+                    uniqueFileName = Guid.NewGuid().ToString() + "_" + photo.FileName;
+                    string filePath = Path.Combine(uploadsFolder, uniqueFileName);
+
+                    using (var fileStream = new FileStream(filePath, FileMode.Create))
+                    {
+                        photo.CopyTo(fileStream);
+
+                        ExistingFilePath paths = new ExistingFilePath
+                        {
+                            Id = Guid.NewGuid(),
+                            FilePath = uniqueFileName,
+                            CarId = car.Id
+                        };
+
+                        _context.ExistingFilePath.Add(paths);
+                    }
+                }
+            }
+
+            return uniqueFileName;
+        }
+
 
 
     }
